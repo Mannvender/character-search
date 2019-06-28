@@ -29,6 +29,7 @@ class Home extends Component {
 
 	getFilteredCharacters = () => {
 		let { characters } = this.props;
+		if (Boolean(characters) === false) return [];
 		const { bookmarks, searchQuery } = this.state;
 		if (searchQuery) {
 			const searchRegex = new RegExp(searchQuery, 'i');
@@ -74,7 +75,7 @@ class Home extends Component {
 		return (
 			<div className='container'>
 				<Row className='my-3'>
-					<Search placeholder="input author code" enterButton="Search" size="large" onSearch={this.handleSearch} />
+					<Search placeholder="search name or aliases" enterButton="Search" size="large" onSearch={this.handleSearch} allowClear />
 					<small className='text-danger'>{errorMessage}</small>
 					{searchQuery && <small className='text-info'>Showing Search Results Of: {searchQuery}</small>}
 				</Row>

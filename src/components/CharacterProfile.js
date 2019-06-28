@@ -8,7 +8,8 @@ import {
 
 class CharacterProfile extends Component {
 	componentDidMount() {
-		this.props.getCharacter();
+		const { match: { params: { characterId } } } = this.props;
+		this.props.getCharacter(characterId);
 	}
 	render() {
 		const { characters, match: { params: { characterId } } } = this.props;

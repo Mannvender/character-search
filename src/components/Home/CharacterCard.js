@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 
 import {
 	Card,
-	Icon
+	Icon,
+	message
 } from 'antd';
 
 class CharacterCard extends Component {
@@ -19,8 +20,10 @@ class CharacterCard extends Component {
 		const characterId = this.getCharacterId();
 		if (this.isCharacterBookmarked(bookmarks)) {
 			bookmarks = bookmarks.filter(id => id !== characterId);
+			message.info('Bookmark Removed');
 		} else {
 			bookmarks.push(characterId);
+			message.info('Bookmark Added');
 		}
 		localStorage.setItem('character-bookmarks', JSON.stringify(bookmarks));
 		updateBookmarks(bookmarks);
