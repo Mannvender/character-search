@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import CharacterCard from './Home/CharacterCard';
+
 // Ant Design React Components
 import {
 	Input,
@@ -11,15 +13,43 @@ const { Search } = Input;
 const errorMessage = 'Alpha Numeric Characters Only, Please Search Again';
 
 class Home extends Component {
-	state={
-		errorMessage: null
+	state = {
+		bookmarks: [],
+		errorMessage: null,
+		searchQuery: null
 	}
+
+	componentDidMount() {
+		const bookmarks = localStorage.getItem('character-bookmarks');
+		if (Boolean(bookmarks) === false) {
+			localStorage.setItem('character-bookmarks', JSON.stringify([]));
+		}
+		this.setState({ bookmarks: JSON.parse(bookmarks) });
+	}
+
+	getFilteredCharacters = () => {
+		let { characters } = this.props;
+		const { bookmarks, searchQuery } = this.state;
+		if (searchQuery) {
+			const searchRegex = new RegExp(searchQuery, 'i');
+			characters = characters.filter(character => searchRegex.test(character.name) || searchRegex.test(character.aliases));
+		}
+		characters.map(character => {
+			const characterUrlArr = character.url.split('/');
+			const characterId = characterUrlArr[characterUrlArr.length - 1];
+			if (bookmarks.indexOf(characterId) > -1) character.isBookmarked = true;
+			else character.isBookmarked = false;
+			return character;
+		});
+		return characters;
+	}
+
 	handleSearch = searchQuery => {
 		if (this.isAlphaNumeric(searchQuery)) {
 			this.setState({ errorMessage: null });
-			// searchAuthor(searchQuery);
+			this.setState({ searchQuery });
 		} else {
-			this.setState({ errorMessage });
+			this.setState({ errorMessage, searchQuery: null });
 		}
 	}
 
@@ -35,13 +65,22 @@ class Home extends Component {
 		}
 		return true;
 	};
+
+	updateBookmarks = updateBookmarks => this.setState({ bookmarks: updateBookmarks });
+
 	render() {
-		const { errorMessage } = this.state;
+		const { bookmarks, errorMessage, searchQuery } = this.state;
+		const characters = this.getFilteredCharacters();
 		return (
 			<div className='container'>
 				<Row className='my-3'>
 					<Search placeholder="input author code" enterButton="Search" size="large" onSearch={this.handleSearch} />
 					<small className='text-danger'>{errorMessage}</small>
+					{searchQuery && <small className='text-info'>Showing Search Results Of: {searchQuery}</small>}
+				</Row>
+				<Row>
+					{characters.length === 0 && 'No Characters to show'}
+					{characters.map(character => <CharacterCard bookmarks={bookmarks} character={character} key={character.aliases} updateBookmarks={this.updateBookmarks} />)}
 				</Row>
 			</div>
 		);
