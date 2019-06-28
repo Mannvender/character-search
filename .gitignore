@@ -13,12 +13,3 @@ build
 .DS_Store
 .env
 npm-debug.log
-
-# cordova
-www
-plugins
-platforms
-config.xml
-
-# Config file
-src/config.json
